@@ -1,15 +1,14 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState } from "react";
 import { handleForm } from "../utils/handleForm";
 import { auth } from "../utils/firebase";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
-  onAuthStateChanged,
   updateProfile,
 } from "firebase/auth";
 import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import { addUser, removeUser } from "../utils/userSlice";
+import { addUser } from "../utils/userSlice";
+import Header from "./Header";
 
 const Login = () => {
   const [isSignIn, setIsSignIn] = useState(true);
@@ -18,7 +17,6 @@ const Login = () => {
   const password = useRef(null);
   const name = useRef(null);
   const dispath = useDispatch();
-  const navigate = useNavigate();
 
   const handleSignIn = () => {
     setIsSignIn(!isSignIn);
@@ -46,7 +44,6 @@ const Login = () => {
             .then(() => {
               const { email, displayName } = user;
               dispath(addUser({ email: email, displayName: displayName }));
-              navigate("/browse");
             })
             .catch((error) => {
               setErrMessage(error.message);
@@ -64,9 +61,7 @@ const Login = () => {
         email.current.value,
         password.current.value
       )
-        .then((userCredential) => {
-          navigate("/browse");
-        })
+        .then((userCredential) => {})
         .catch((error) => {
           const errorCode = error.code;
           const errorMessage = error.message;
@@ -74,18 +69,6 @@ const Login = () => {
         });
     }
   };
-
-  useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        const { displayName, email } = user;
-        dispath(addUser({ email: email, displayName: displayName }));
-      } else {
-        dispath(removeUser());
-        navigate("/");
-      }
-    });
-  }, []);
 
   return (
     <div>
@@ -98,11 +81,7 @@ const Login = () => {
       </div>
       <div className="bg-[#0000008b] w-screen h-screen">
         <div className="w-10/12 mx-auto">
-          <img
-            className="w-48"
-            src="https://cdn.cookielaw.org/logos/dd6b162f-1a32-456a-9cfe-897231c7763c/4345ea78-053c-46d2-b11e-09adaef973dc/Netflix_Logo_PMS.png"
-            alt="logo"
-          ></img>
+          <Header />
         </div>
         <div className="w-4/12 mx-auto bg-[#000000c6] px-4 py-14">
           <form
